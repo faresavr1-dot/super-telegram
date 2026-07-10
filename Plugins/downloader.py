@@ -1,19 +1,3 @@
-'''
-
-
-██████╗░██████╗░██████╗░
-██╔══██╗╚════██╗██╔══██╗
-██████╔╝░█████╔╝██║░░██║
-██╔══██╗░╚═══██╗██║░░██║
-██║░░██║██████╔╝██████╔╝
-╚═╝░░╚═╝╚═════╝░╚═════╝░
-
-
-[ = This plugin is a part from R3D Source code = ]
-{"Developer":"https://t.me/yqyqy66"}
-
-'''
-
 import yt_dlp,os, requests, re, time, wget, random, json 
 from yt_dlp import YoutubeDL
 from pytube import YouTube
