@@ -27,7 +27,7 @@ def Find(text):
 @Client.on_message(filters.text & filters.group, group=32)
 def ytdownloaderHandler(c, m):
     k = r.get(f'{Dev_Zaid}:botkey')
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     Thread(target=yt_func, args=(c, m, k, channel)).start()
 
 def yt_func(c, m, k, channel):
@@ -52,25 +52,32 @@ def yt_func(c, m, k, channel):
         if r.get(f':disableYT:{Dev_Zaid}'):
             return
         query = text.split(None, 1)[1]
-        
-        wait_msg = m.reply(f"{k} جاري التحميل... ⏳")
+        wait_msg = m.reply("جاري التحميل ...", reply_markup=rep)
         
         results = Y88F8(query, max_results=1).to_dict()
         if not results:
-            wait_msg.edit(f"{k} مالقيت نتيجة للبحث `{query}`")
+            wait_msg.delete()
             return
         
         res = results[0]
-        vid_id = res['id']
-        url = f'https://youtu.be/{vid_id}'
+        title = res['title']
+        duration = int(time_to_seconds(res['duration']))
+        duration_string = time.strftime('%M:%S', time.gmtime(duration))
         
+        if ytdb.get(f'ytvideo{res["id"]}'):
+            aud = ytdb.get(f'ytvideo{res["id"]}')
+            duration_string = time.strftime('%M:%S', time.gmtime(aud["duration"]))
+            wait_msg.delete()
+            return m.reply_audio(aud["audio"], caption=f'@{channel} ~ {duration_string} ⏳', reply_markup=rep)
+            
+        url = f'https://youtu.be/{res["id"]}'
         try:
             with yt_dlp.YoutubeDL({'quiet': True, 'cookiefile': 'cookies.txt'}) as ydl:
                 info = ydl.extract_info(url, download=False)
                 duration = info.get('duration')
                 if duration > 15555555:
-                    wait_msg.edit(f"{k} الصوت أطول من 25 دقيقة، ما أقدر أنزله")
-                    return
+                    wait_msg.delete()
+                    return m.reply("صوت فوق 25 دقيقة ما اقدر انزله", reply_markup=rep)
                 duration_string = time.strftime('%M:%S', time.gmtime(duration))
                 thumb = info.get('thumbnail')
                 if thumb:
@@ -80,8 +87,8 @@ def yt_func(c, m, k, channel):
                 title = info.get('title')
                 author = info.get('uploader')
         except Exception as e:
-            wait_msg.edit(f"{k} حدث خطأ في جلب معلومات الفيديو")
-            return
+            wait_msg.delete()
+            return m.reply("حدث خطأ في جلب معلومات الفيديو", reply_markup=rep)
 
         ydl_ops = {
             "format": "bestaudio[ext=m4a]",
@@ -92,10 +99,9 @@ def yt_func(c, m, k, channel):
             info = ydl.extract_info(url, download=False)
             audio_file = ydl.prepare_filename(info)
             ydl.process_info(info)
-        
+            
         os.rename(audio_file, audio_file.replace(".m4a", ".mp3"))
         audio_file = audio_file.replace(".m4a", ".mp3")
-        
         wait_msg.delete()
         
         a = m.reply_audio(
@@ -107,8 +113,7 @@ def yt_func(c, m, k, channel):
             performer=author,
             reply_markup=rep
         )
-        
-        ytdb.set(f'ytvideo{vid_id}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
+        ytdb.set(f'ytvideo{res["id"]}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
         os.remove(audio_file)
         if thumb:
             os.remove(thumb)
@@ -360,7 +365,7 @@ async def shazamFunc(c, m):
             except:
                 photo = "https://telegra.ph/file/49ace69e7c43c0041fb63.jpg"
             k = r.get(f'{Dev_Zaid}:botkey')
-            channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+            channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
             url = out["track"]["url"]
             TEXT = f"""
 {k} اسم الصوت ( [{title}]({url}) )
@@ -400,7 +405,7 @@ async def shazamLyrics(c, m):
 @Client.on_inline_query(filters.regex("SOUND"))
 async def SoundCloud(c, query):
     url = query.query.split("#SOUND")[0]
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     if url.count('/') > 1:
         await query.answer(
             results=[
@@ -466,7 +471,7 @@ def getInfo(c, query):
     if r.get(f':disableYT:{Dev_Zaid}'):
         return
     query.message.delete()
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     url = f'https://youtu.be/{vid_id}'
 
     try:
@@ -515,7 +520,7 @@ def audio_down(c, query):
         return
     if r.get(f':disableYT:{Dev_Zaid}'):
         return
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     rep = InlineKeyboardMarkup([
         [InlineKeyboardButton('🧚‍♀️', url=f'https://t.me/{channel}')]
     ])
@@ -573,7 +578,7 @@ def video_down(c, query):
         return
     if r.get(f':disableYT:{Dev_Zaid}'):
         return
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     rep = InlineKeyboardMarkup([
         [InlineKeyboardButton('🧚‍♀️', url=f'https://t.me/{channel}')]
     ])
