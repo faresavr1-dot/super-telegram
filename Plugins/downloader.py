@@ -27,7 +27,7 @@ def Find(text):
 @Client.on_message(filters.text & filters.group, group=32)
 def ytdownloaderHandler(c, m):
     k = r.get(f'{Dev_Zaid}:botkey')
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     Thread(target=yt_func, args=(c, m, k, channel)).start()
 
 def yt_func(c, m, k, channel):
@@ -46,20 +46,58 @@ def yt_func(c, m, k, channel):
         [InlineKeyboardButton('🧚‍♀️', url=f'https://t.me/{channel}')]
     ])
 
+    # ✅ أمر يوت - يجيب أول نتيجة صوت مباشرة من غير اختيارات
     if text.startswith('يوت '):
         if r.get(f'{m.chat.id}:disableYT:{Dev_Zaid}'):
             return
         if r.get(f':disableYT:{Dev_Zaid}'):
             return
         query = text.split(None, 1)[1]
-        keyboard = []
-        results = Y88F8(query, max_results=4).to_dict()
-        for res in results:
-            title = res['title']
-            vid_id = res['id']
-            keyboard.append([InlineKeyboardButton(title, callback_data=f'{m.from_user.id}GET{vid_id}')])
-        a = m.reply(f'{k} البحث ~ {query}', reply_markup=InlineKeyboardMarkup(keyboard), disable_web_page_preview=True)
-        r.set(f'{a.id}:one_minute:{m.from_user.id}', 1, ex=60)
+        results = Y88F8(query, max_results=1).to_dict()
+        if not results:
+            return m.reply(f"{k} مفيش نتيجة")
+        res = results[0]
+        url = f'https://youtu.be/{res["id"]}'
+        try:
+            with yt_dlp.YoutubeDL({'quiet': True, 'cookiefile': 'cookies.txt'}) as ydl:
+                info = ydl.extract_info(url, download=False)
+                duration = info.get('duration')
+                if duration > 15555555:
+                    return m.reply("صوت فوق 25 دقيقة ما اقدر انزله")
+                duration_string = time.strftime('%M:%S', time.gmtime(duration))
+                thumb = info.get('thumbnail')
+                if thumb:
+                    thumb = wget.download(thumb)
+                else:
+                    thumb = None
+                title = info.get('title')
+                author = info.get('uploader')
+        except Exception as e:
+            return m.reply("حدث خطأ في جلب معلومات الفيديو")
+
+        ydl_ops = {
+            "format": "bestaudio[ext=m4a]",
+            "forceduration": True,
+            "cookiefile": "cookies.txt",
+        }
+        with yt_dlp.YoutubeDL(ydl_ops) as ydl:
+            info = ydl.extract_info(url, download=False)
+            audio_file = ydl.prepare_filename(info)
+            ydl.process_info(info)
+        os.rename(audio_file, audio_file.replace(".m4a", ".mp3"))
+        audio_file = audio_file.replace(".m4a", ".mp3")
+        a = m.reply_audio(
+            audio_file,
+            title=title,
+            thumb=thumb,
+            duration=duration,
+            caption=f'@{channel} ~ {duration_string} ⏳\n\n{title}\n{author}',
+            performer=author
+        )
+        ytdb.set(f'ytvideo{res["id"]}', {"type": "audio", "audio": a.audio.file_id, "duration": a.audio.duration})
+        os.remove(audio_file)
+        if thumb:
+            os.remove(thumb)
         return True
 
     if text.startswith('بحث ') or text.startswith('yt '):
@@ -79,18 +117,7 @@ def yt_func(c, m, k, channel):
             return m.reply_audio(aud["audio"], caption=f'@{channel} ~ {duration_string} ⏳', reply_markup=rep)
         url = f'https://youtu.be/{res["id"]}'
         try:
-            with yt_dlp.YoutubeDL({
-                'quiet': True,
-                'cookiefile': 'cookies.txt',
-                'extractor_args': {
-                    'youtube': {
-                        'js_runtimes': ['deno'],
-                        'remote_components': ['ejs:github'],
-                        'sleep_interval': 30,
-                        'max_sleep_interval': 60
-                    }
-                }
-            }) as ydl:
+            with yt_dlp.YoutubeDL({'quiet': True, 'cookiefile': 'cookies.txt'}) as ydl:
                 info = ydl.extract_info(url, download=False)
                 duration = info.get('duration')
                 if duration > 15555555:
@@ -110,14 +137,6 @@ def yt_func(c, m, k, channel):
             "format": "bestaudio[ext=m4a]",
             "forceduration": True,
             "cookiefile": "cookies.txt",
-            "extractor_args": {
-                "youtube": {
-                    "js_runtimes": ["deno"],
-                    "remote_components": ["ejs:github"],
-                    "sleep_interval": 30,
-                    "max_sleep_interval": 60
-                }
-            }
         }
         with yt_dlp.YoutubeDL(ydl_ops) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -327,7 +346,7 @@ async def shazamFunc(c, m):
             except:
                 photo = "https://telegra.ph/file/49ace69e7c43c0041fb63.jpg"
             k = r.get(f'{Dev_Zaid}:botkey')
-            channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+            channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
             url = out["track"]["url"]
             TEXT = f"""
 {k} اسم الصوت ( [{title}]({url}) )
@@ -367,7 +386,7 @@ async def shazamLyrics(c, m):
 @Client.on_inline_query(filters.regex("SOUND"))
 async def SoundCloud(c, query):
     url = query.query.split("#SOUND")[0]
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     if url.count('/') > 1:
         await query.answer(
             results=[
@@ -433,22 +452,11 @@ def getInfo(c, query):
     if r.get(f':disableYT:{Dev_Zaid}'):
         return
     query.message.delete()
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     url = f'https://youtu.be/{vid_id}'
 
     try:
-        with yt_dlp.YoutubeDL({
-            'quiet': True,
-            'cookiefile': 'cookies.txt',
-            'extractor_args': {
-                'youtube': {
-                    'js_runtimes': ['deno'],
-                    'remote_components': ['ejs:github'],
-                    'sleep_interval': 30,
-                    'max_sleep_interval': 60
-                }
-            }
-        }) as ydl:
+        with yt_dlp.YoutubeDL({'quiet': True, 'cookiefile': 'cookies.txt'}) as ydl:
             info = ydl.extract_info(url, download=False)
             photo = info.get('thumbnail')
             title = info.get('title')
@@ -493,7 +501,7 @@ def audio_down(c, query):
         return
     if r.get(f':disableYT:{Dev_Zaid}'):
         return
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     rep = InlineKeyboardMarkup([
         [InlineKeyboardButton('🧚‍♀️', url=f'https://t.me/{channel}')]
     ])
@@ -512,14 +520,6 @@ def audio_down(c, query):
         "format": "bestaudio[ext=m4a]",
         "forceduration": True,
         "cookiefile": "cookies.txt",
-        "extractor_args": {
-            "youtube": {
-                "js_runtimes": ["deno"],
-                "remote_components": ["ejs:github"],
-                "sleep_interval": 30,
-                "max_sleep_interval": 60
-            }
-        }
     }
     with yt_dlp.YoutubeDL(ydl_ops) as ydl:
         info = ydl.extract_info(url, download=False)
@@ -559,7 +559,7 @@ def video_down(c, query):
         return
     if r.get(f':disableYT:{Dev_Zaid}'):
         return
-    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel') else 'w7G_BoT'
+    channel = r.get(f'{Dev_Zaid}:BotChannel') if r.get(f'{Dev_Zaid}:BotChannel}) else 'w7G_BoT'
     rep = InlineKeyboardMarkup([
         [InlineKeyboardButton('🧚‍♀️', url=f'https://t.me/{channel}')]
     ])
@@ -574,18 +574,7 @@ def video_down(c, query):
     url = f'https://youtu.be/{vid_id}'
     query.edit_message_caption("جاري التحميل ..", reply_markup=rep)
 
-    with yt_dlp.YoutubeDL({
-        'quiet': True,
-        'cookiefile': 'cookies.txt',
-        'extractor_args': {
-            'youtube': {
-                'js_runtimes': ['deno'],
-                'remote_components': ['ejs:github'],
-                'sleep_interval': 30,
-                'max_sleep_interval': 60
-            }
-        }
-    }) as ydl:
+    with yt_dlp.YoutubeDL({'quiet': True, 'cookiefile': 'cookies.txt'}) as ydl:
         info = ydl.extract_info(url, download=False)
         if int(info['duration']) > 1555555555:
             return query.edit_message_caption("فيديو اكثر من 25 دقيقة مقدر انزله", reply_markup=rep)
@@ -598,14 +587,6 @@ def video_down(c, query):
         "outtmpl": "%(title)s.%(ext)s",
         "quite": True,
         "cookiefile": "cookies.txt",
-        "extractor_args": {
-            "youtube": {
-                "js_runtimes": ["deno"],
-                "remote_components": ["ejs:github"],
-                "sleep_interval": 30,
-                "max_sleep_interval": 60
-            }
-        }
     }
     with YoutubeDL(ydl_opts) as ytdl:
         ytdl_data = ytdl.extract_info(url, download=True)
