@@ -1,11 +1,13 @@
-pyrogram==2.0.104
+pyrogram==2.0.97
 tgcrypto
 requests 
 yt_dlp
 youtube_search
 redis
 pytz
+#googletrans==3.1.0a0 
 hijri_converter
+#getids
 akinator 
 pySmartDL
 pysocket
@@ -31,10 +33,4 @@ aiofiles
 python-arq
 uuid
 kvsqlite
-beautifulsoup4
-lxml
-python-dateutil
-gitpython
-python-dotenv
-ffmpeg-python
-aiosqlite
+python-telegram-bot>=21.0
