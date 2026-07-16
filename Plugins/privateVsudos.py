@@ -281,7 +281,8 @@ async def to_send(c: Client, m: Message):
                     [
                         InlineKeyboardButton(
                             text="لعرض الهمسة",
-                            url=url
+                            url=url,
+                            style="primary"
                         )
                     ]
                 ]
@@ -315,8 +316,8 @@ def private_func(c,m,k):
 ↞ كت تويت, يوتيوب, ساوند , واشياء كثير ..
 ↞ عشان تفعلني ارفعني اشراف وارسل تفعيل.
 ''', reply_markup=InlineKeyboardMarkup ([
-    [InlineKeyboardButton ('ضيفني لـ مجموعتك 🧚‍♀️', url=f'https://t.me/{botUsername}?startgroup=Commands&admin=ban_users+restrict_members+delete_messages+add_admins+change_info+invite_users+pin_messages+manage_call+manage_chat+manage_video_chats+promote_members')],
-    [InlineKeyboardButton (f'تحديثات {name} 🍻', url=f'https://t.me/{channel}')]
+    [InlineKeyboardButton ('ضيفني لـ مجموعتك 🧚‍♀️', url=f'https://t.me/{botUsername}?startgroup=Commands&admin=ban_users+restrict_members+delete_messages+add_admins+change_info+invite_users+pin_messages+manage_call+manage_chat+manage_video_chats+promote_members', style='success')],
+    [InlineKeyboardButton (f'تحديثات {name} 🍻', url=f'https://t.me/{channel}', style='primary')]
     ]))
         if not r.sismember(f'{Dev_Zaid}:UsersList',m.from_user.id):
             r.sadd(f'{Dev_Zaid}:UsersList',m.from_user.id)
@@ -332,7 +333,7 @@ def private_func(c,m,k):
 
 ☆ عدد المستخدمين صار {}
 '''.format(m.from_user.mention,m.from_user.id,username,len(r.smembers(f'{Dev_Zaid}:UsersList')))
-            reply_markup = InlineKeyboardMarkup ([[InlineKeyboardButton (m.from_user.first_name, user_id=m.from_user.id)]])
+            reply_markup = InlineKeyboardMarkup ([[InlineKeyboardButton (m.from_user.first_name, user_id=m.from_user.id, style='primary')]])
             if r.get(f'DevGroup:{Dev_Zaid}'):
                 c.send_message(
                 int(r.get(f'DevGroup:{Dev_Zaid}')),
@@ -344,23 +345,24 @@ def private_func(c,m,k):
                     except:
                         pass
     
+    # ✅ قائمة الأوامر (تم التعديل هنا)
     if text == '/start Commands':
         return m.reply(text=f'{k} اهلين فيك باوامر البوت\n\nللاستفسار - @{channel}',
             reply_markup=InlineKeyboardMarkup (
                 [
                     [
-                    InlineKeyboardButton ('م1', callback_data=f'commands1:{m.from_user.id}'),
-                    InlineKeyboardButton ('م2', callback_data=f'commands2:{m.from_user.id}')
+                    InlineKeyboardButton ('📘 م1', callback_data=f'commands1:{m.from_user.id}', style="primary"),
+                    InlineKeyboardButton ('📗 م2', callback_data=f'commands2:{m.from_user.id}', style="primary")
                     ],
                     [
-                    InlineKeyboardButton ('م3', callback_data=f'commands3:{m.from_user.id}'),
+                    InlineKeyboardButton ('📗 م3', callback_data=f'commands3:{m.from_user.id}', style="success")
                     ],
                     [
-                    InlineKeyboardButton ('الالعاب', callback_data=f'commands4:{m.from_user.id}'),
-                    InlineKeyboardButton ('التسليه', callback_data=f'commands5:{m.from_user.id}'),
+                    InlineKeyboardButton ('🎮 الالعاب', callback_data=f'commands4:{m.from_user.id}', style="primary"),
+                    InlineKeyboardButton ('🎭 التسليه', callback_data=f'commands5:{m.from_user.id}', style="success")
                     ],
                     [
-                    InlineKeyboardButton ('اليوتيوب', callback_data=f'commands6:{m.from_user.id}'),
+                    InlineKeyboardButton ('🎬 اليوتيوب', callback_data=f'commands6:{m.from_user.id}', style="danger")
                     ],
                 ]
             )
@@ -373,7 +375,7 @@ def private_func(c,m,k):
 - ممنوع استخدام الثغرات
 - ممنوع وضع اسماء مُخالفة
 - ١٠ حروف مسموحه في اسمك اذا كنت بالتوب الباقي ماراح يطلع
-- في حال انك بالتوب واسمك مزخرف راح يصفيه البوت تلقائي''',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton (f"تحديثات {name} 🍻", url=f't.me/{channel}')]]))
+- في حال انك بالتوب واسمك مزخرف راح يصفيه البوت تلقائي''',reply_markup=InlineKeyboardMarkup ([[InlineKeyboardButton (f"تحديثات {name} 🍻", url=f't.me/{channel}', style='primary')]]))
     
     if text == '/start' and dev_pls(m.from_user.id,m.chat.id):
         reply_markup = ReplyKeyboardMarkup(
