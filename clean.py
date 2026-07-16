@@ -21,8 +21,8 @@ db = redis.Redis(decode_responses=True)
 
 DevZaid = Client(
     "cleaner",
-    13251350,
-    "66c0eacb36f9979ae6d153f207565cd6",
+    24217199,
+    "11c12a66dbd23da592211771db1bce6b",
     bot_token=token,
     in_memory=True
 )
