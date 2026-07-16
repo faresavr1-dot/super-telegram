@@ -58,7 +58,7 @@ with open('config.py','w+') as w:
 print('''
 50% 
 ███████▒▒▒ ''')
-app = Client(f'{Dev_Zaid}r3d', 9398500, 'ad2977d673006bed6e5007d953301e13',
+app = Client(f'{Dev_Zaid}r3d', 24217199, '11c12a66dbd23da592211771db1bce6b',
   bot_token=token,
     plugins={"root": "Plugins"},
   )
